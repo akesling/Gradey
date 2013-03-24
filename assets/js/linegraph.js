@@ -124,7 +124,7 @@
         .x(function(d) { return x(d.date); })
         .y(function(d) { return y(d.grade); });
 
-    var svg = d3.select("line_plot")
+    var svg = d3.select(chart_id)
         .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -133,6 +133,13 @@
 
     (function () {
         color.domain(d3.keys(Object.keys(grades)));
+        var data = [[]].concat(Object.keys(grades))
+            .reduce(function (arr, idx) {
+                return arr.concat(grades[idx]);
+            })
+            .map(function(d) {
+                return {date: parseDate(d[0]), grade: d[1]};
+            });
 
         var subjects = color.domain().map(function(idx) {
             subject = Object.keys(grades)[idx]
@@ -144,12 +151,9 @@
             };
         });
 
-        x.domain(d3.extent(grades, function(d) { return d.date; }));
+        x.domain(d3.extent(data, function(d) { return d.date; }));
 
-        y.domain([
-            d3.min(subjects, function(c) { return d3.min(c.values, function(v) { return v.grade; }); }),
-            d3.max(subjects, function(c) { return d3.max(c.values, function(v) { return v.grade; }); })
-        ]);
+        y.domain(d3.extent(data, function(d) { return d.grade; }));
 
         svg.append("g")
             .attr("class", "x axis")
@@ -177,11 +181,11 @@
             .style("stroke", function(d) { return color(d.subject); });
 
         subject.append("text")
-            .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-            .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")"; })
+            .datum(function(d) { return {subject: d.subject, value: d.values[d.values.length - 1]}; })
+            .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.grade) + ")"; })
             .attr("x", 3)
             .attr("dy", ".35em")
-            .text(function(d) { return d.name; });
+            .text(function(d) { return d.subject; });
     })();
 
 })();
