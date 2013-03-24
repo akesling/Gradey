@@ -1,4 +1,5 @@
-function upURL {
+
+function upURL() {
     var s = document.URL;
  /* "file:///home/rachael/Dev/inBloom/Gradey/assesment.html#user=linda.kim#section=foo.bar#assessment=homework3" */
     var tokens = s.split('/');
@@ -9,8 +10,12 @@ function upURL {
     var pathArray = path.split("#");
  /* ["assesment.html", "user=linda.kim", "section=foo.bar", "assessment=homework3"] */
 
-    var newPath = pathArray.slice(0,p.length-1).join("#");
+    var newPath = pathArray.slice(0,pathArray.length-1).join("#");
     
-    var newURL = window.location.href = newPath;
+    return newPath;
 
 }
+
+$(document).ready(function () {
+    $("#upAction").attr("href", upURL());
+});
